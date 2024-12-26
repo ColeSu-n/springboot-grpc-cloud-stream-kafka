@@ -1,0 +1,106 @@
+server:
+  port: 8801
+grpc:
+  server: 
+    port: 9094
+  client:
+    local-grpc-server:
+      address: static://172.20.154.162:9090
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    other-grpc-server:
+      address: static://172.20.154.160:9090
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
+spring:
+  cloud:
+    stream:
+      # default:
+      #   producer:
+      #     error-channel-enabled: true
+      binders:
+        kafka1:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder: 
+                      brokers: 172.20.154.160:9092
+                      auto-create-topics: true
+                      min-partition-count: 1
+                      replication-factor: 1
+                      configuration:
+                        acks: -1
+                        reconnect.backoff.max.ms: 120000
+                    bindings:
+                      my-prod-input:
+                        consumer:
+                          auto-commit-offset: false
+                          destination-is-pattern: true
+                          group: test
+        kafka2:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder: 
+                      brokers: 172.20.154.162:9092
+                      auto-create-topics: true
+                      min-partition-count: 1
+                      replication-factor: 1
+                      configuration:
+                        acks: -1
+                        reconnect.backoff.max.ms: 120000
+                    bindings:
+                      my-prod-input2:
+                        consumer:
+                          auto-commit-offset: false
+                          destination-is-pattern: true
+                          group: test2
+      bindings:
+        my-prod-input:
+          destination: test1
+          binder: kafka1
+          group: test
+          consumer:
+            batch-mode: true
+        my-prod-input2:
+          destination: test1
+          binder: kafka2
+          group: test2
+          consumer:
+            batch-mode: true
+        my-prod-output:
+          destination: test1
+          binder: kafka1  # 绑定到第一个 Kafka 集群
+        my-prod-output2:
+          destination: test1
+          binder: kafka2  # 绑定到第二个 Kafka 集群
+
+enable_offset:
+  kafka1: 
+    offset: 0
+  kafka2:
+    offset: 0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, env, info  # 暴露健康检查、指标、环境信息和应用信息等
+  endpoint:
+    health:
+      show-details: always  # 显示详细健康信息
+
+# server.port=8801
+
+# grpc.client.local-grpc-server.host=127.0.0.1
+# grpc.client.local-grpc-server.port=8800
+# grpc.client.local-grpc-server.enableKeepAlive=true
+# grpc.client.local-grpc-server.keepAliveWithoutCalls=true
