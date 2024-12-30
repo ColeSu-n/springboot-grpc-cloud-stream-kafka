@@ -84,19 +84,31 @@ spring:
         #   destination: test1
         #   binder: kafka2  # 绑定到第二个 Kafka 集群
 
-enable_offset:
+offset:
   kafka1: 
     offset: 0
+    enabled: false
   kafka2:
     offset: 0
+    enabled: false
 management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    health:
+      show-details: always  # 显示详细健康信息
   endpoints:
     web:
       exposure:
-        include: health, metrics, env, info  # 暴露健康检查、指标、环境信息和应用信息等
-  endpoint:
-    health:
-      show-details: always  # 显示详细健康信息
+        include: "*" # 暴露健康检查、指标、环境信息和应用信息等
+      discovery:
+        enabled: true
+  metrics: 
+    export:
+      simple:
+        enabled: false
 
 msg-router: 
   recieveRouters:
