@@ -2,9 +2,16 @@ package com.ipman.rpc.grpc.springboot.service.impl;
 
 import com.ipman.rpc.grpc.springboot.lib.GreeterGrpc;
 import com.ipman.rpc.grpc.springboot.lib.GreeterOuterClass;
+import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc;
+import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc.NewGreeterBlockingStub;
+import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass;
+import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass.NewHelloReply;
 import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 import io.grpc.Channel;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,5 +39,12 @@ public class GrpcClientServiceImpl2 implements IGrpcClientService {
         GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(serverChannel2);
         GreeterOuterClass.HelloReply response = stub.sayHello(GreeterOuterClass.HelloRequest.newBuilder().setName(name).build());
         return response.getMessage();
+    }
+
+    @Override
+    public Map sendObject(Map mapData) {
+        NewGreeterBlockingStub stub = NewGreeterGrpc.newBlockingStub(serverChannel2);
+        NewHelloReply response = stub.sayHello(NewGreeterOuterClass.NewHelloRequest.newBuilder().putAllRequestData(mapData).build());
+        return response.getRequestDataMap();
     }
 }

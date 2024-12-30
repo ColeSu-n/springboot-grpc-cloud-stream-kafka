@@ -98,6 +98,30 @@ management:
     health:
       show-details: always  # 显示详细健康信息
 
+msg-router: 
+  recieve_routers:
+    - kafkaClusters: "172.20.154.160:9092"
+      topic: 
+        - test1
+    - kafkaClusters: "172.20.154.162:9092"
+      topic:
+        - test2
+  send_routers:
+    - kafkaClusters: "172.20.154.160:9092"
+      topic: 
+        - test1
+      consumer_endpoint:
+        - 172.20.154.160:9090
+    - kafkaClusters: "172.20.154.162:9092"
+      topic:
+        - test2
+      consumer_endpoint:
+        - 172.20.154.162:9090
+
+kafka:
+  producer:
+    - ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
+    - ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
 # server.port=8801
 
 # grpc.client.local-grpc-server.host=127.0.0.1

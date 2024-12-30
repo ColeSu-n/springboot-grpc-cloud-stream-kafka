@@ -21,8 +21,14 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
+import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
 import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl2;
+
+import io.grpc.Channel;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +48,8 @@ public class MyProdConsumer2 {
     RestTemplate restTemplate;
     @Autowired
     private GrpcClientServiceImpl2 grpcClientService;
+    @Autowired
+    KafkaRouterConfig kafkaRouterConfig;
     /**
      * logger
      */
@@ -79,7 +87,16 @@ public class MyProdConsumer2 {
         for (int i = 0; i < payloads.size(); i++) {
             byte[] bytes = (byte[]) payloads.get(i);
             LOGGER.info("payload:{} from topic:{}, partitionId:{}, groupId:{}", new String(bytes), topics.get(i), partitionIds.get(i), groupId);
-            grpcClientService.sendMessage(new String(bytes));
+            // grpcClientService.sendMessage(new String(bytes));
+            Map<String,String> hashMap = new HashMap<String,String>();
+            hashMap.put("data",new String(bytes));
+            for (SendRouter send_routers : kafkaRouterConfig.getSend_routers()) {
+               if (send_routers.getTopic().contains(topics.get(i))) {
+                   hashMap.put("endpoint",send_routers.getConsumer_endpoint().get(0));
+                   break;
+               }
+           }
+            grpcClientService.sendObject(hashMap);
         }
         acknowledgment.acknowledge();
         // String url = "http://172.20.154.162:8081/example/api";
@@ -94,6 +111,14 @@ public class MyProdConsumer2 {
         //     acknowledgment.acknowledge();
         //     LOGGER.info("consumer message total:{}", counter.addAndGet(payloads.size()));
         // }
+    }
+
+
+    private Channel createChannel(String address) {
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(address)
+               .usePlaintext() // 如果是非加密连接，使用这个，根据实际安全需求调整
+               .build();
+        return channel;
     }
 
 }

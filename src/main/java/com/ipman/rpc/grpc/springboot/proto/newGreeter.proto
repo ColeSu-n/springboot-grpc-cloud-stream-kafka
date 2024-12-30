@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+// import "google/protobuf/any.proto";
+
+option java_package = "com.ipman.rpc.grpc.springboot.lib";
+
+// The greeter service definition.
+service NewGreeter {
+    // Sends a greeting
+    rpc SayHello (NewHelloRequest) returns (NewHelloReply) {}
+}
+
+// The request message containing the user's name.
+message NewHelloRequest {
+    // map<string, google.protobuf.Any> request_data = 1;
+    map<string, string> request_data = 1;
+}
+
+// The response message containing the greetings
+message NewHelloReply {
+    // map<string, google.protobuf.Any> response_data = 1;
+    map<string, string> request_data = 1;
+}

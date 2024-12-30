@@ -1,5 +1,7 @@
 package com.ipman.rpc.grpc.springboot.service;
 
+import java.util.Map;
+
 /**
  * Created by ipipman on 2020/12/15.
  *
@@ -10,4 +12,6 @@ package com.ipman.rpc.grpc.springboot.service;
  */
 public interface IGrpcClientService {
     String sendMessage(String name);
+
+    Map sendObject(Map mapData);
 }

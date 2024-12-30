@@ -1,8 +1,5 @@
 package com.ipman.rpc.grpc.springboot.server;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.ipman.rpc.grpc.springboot.lib.GreeterGrpc;
 import com.ipman.rpc.grpc.springboot.lib.GreeterOuterClass;
 import com.ipman.rpc.grpc.springboot.utils.KafkaProducerFactory;
@@ -20,7 +17,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
  * @date 2020/12/15 6:23 下午
  */
 @Slf4j
-@GrpcService
+// @GrpcService
 public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
     /**

@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
+import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
 import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl;
 
@@ -29,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.google.protobuf.Any;
+
 /**
  * The type My consumer.
  *
@@ -37,6 +41,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 @EnableBinding(MyProdSink.class)
 public class MyProdConsumer {
+
+    @Autowired
+    KafkaRouterConfig kafkaRouterConfig;
     @Autowired
     RestTemplate restTemplate;
     @Autowired
@@ -68,20 +75,19 @@ public class MyProdConsumer {
             @Header(KafkaHeaders.BATCH_CONVERTED_HEADERS) List<Map<String,Object>> rawData
     ) {
         LOGGER.info("consume payloads size: {}", payloads.size());
-
-
-        // pause consume
-        // pause(topics, partitionIds, consumer, true);
-        Set<TopicPartition> assignment = consumer.assignment();
-        long offset = 0;
-        for (TopicPartition topicPartition : assignment) {
-            // 然后指定偏移量
-            // consumer.seek(topicPartition, offset);
-        }
         for (int i = 0; i < payloads.size(); i++) {
             byte[] bytes = (byte[]) payloads.get(i);
             LOGGER.info("payload:{} from topic:{}, partitionId:{}, groupId:{}", new String(bytes), topics.get(i), partitionIds.get(i), groupId);
-            grpcClientService.sendMessage(new String(bytes));
+            // grpcClientService.sendMessage(new String(bytes));
+            Map<String,String> hashMap = new HashMap<String,String>();
+            hashMap.put("data",new String(bytes));
+           for (SendRouter send_routers : kafkaRouterConfig.getSend_routers()) {
+               if (send_routers.getTopic().contains(topics.get(i))) {
+                   hashMap.put("endpoint",send_routers.getConsumer_endpoint().get(0));
+                   break;
+               }
+           }
+            grpcClientService.sendObject(hashMap);
         }
         acknowledgment.acknowledge();
         // System.out.println(rawData.toString());
