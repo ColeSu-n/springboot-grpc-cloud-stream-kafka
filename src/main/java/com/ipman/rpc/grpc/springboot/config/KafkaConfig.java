@@ -10,13 +10,13 @@ import java.util.List;
 @ConfigurationProperties(prefix = "kafka")
 public class KafkaConfig {
 
-    private List<String> producer;
+    private List<String> clusters;
 
-    public List<String> getProducer() {
-        return producer;
+    public List<String> getClusters() {
+        return clusters;
     }
 
-    public void setProducer(List<String> producer) {
-        this.producer = producer;
+    public void setClusters(List<String> clusters) {
+        this.clusters = clusters;
     }
 }

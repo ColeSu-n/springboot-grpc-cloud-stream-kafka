@@ -10,35 +10,38 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "msg-router")
 public class KafkaRouterConfig {
-    private List<ReceiveRouter> recieve_routers;
-    private List<SendRouter> send_routers;
+    private List<RecieveRouter> recieveRouters;
+    private List<SendRouter> sendRouters;
 
-    public List<ReceiveRouter> getRecieve_routers() {
-        return recieve_routers;
+    // Getter and Setter
+
+    public List<RecieveRouter> getRecieveRouters() {
+        return recieveRouters;
     }
 
-    public void setRecieve_routers(List<ReceiveRouter> recieve_routers) {
-        this.recieve_routers = recieve_routers;
+    public void setRecieveRouters(List<RecieveRouter> recieveRouters) {
+        this.recieveRouters = recieveRouters;
     }
 
-    public List<SendRouter> getSend_routers() {
-        return send_routers;
+    public List<SendRouter> getSendRouters() {
+        return sendRouters;
     }
 
-    public void setSend_routers(List<SendRouter> send_routers) {
-        this.send_routers = send_routers;
+    public void setSendRouters(List<SendRouter> sendRouters) {
+        this.sendRouters = sendRouters;
     }
 
-    // 内部类用于接收接收路由器（Receive Router）相关配置
-    public static class ReceiveRouter {
-        private String kafkaClusters;
+    // Inner classes for RecieveRouter and SendRouter
+    public static class RecieveRouter {
+        private List<String> kafkaClusters;
         private List<String> topic;
 
-        public String getKafkaClusters() {
+        // Getter and Setter
+        public List<String> getKafkaClusters() {
             return kafkaClusters;
         }
 
-        public void setKafkaClusters(String kafkaClusters) {
+        public void setKafkaClusters(List<String> kafkaClusters) {
             this.kafkaClusters = kafkaClusters;
         }
 
@@ -51,17 +54,17 @@ public class KafkaRouterConfig {
         }
     }
 
-    // 内部类用于接收发送路由器（Send Router）相关配置
     public static class SendRouter {
-        private String kafkaClusters;
+        private List<String> kafkaClusters;
         private List<String> topic;
-        private List<String> consumer_endpoint;
+        private List<String> consumerEndpoint;
 
-        public String getKafkaClusters() {
+        // Getter and Setter
+        public List<String> getKafkaClusters() {
             return kafkaClusters;
         }
 
-        public void setKafkaClusters(String kafkaClusters) {
+        public void setKafkaClusters(List<String> kafkaClusters) {
             this.kafkaClusters = kafkaClusters;
         }
 
@@ -73,12 +76,12 @@ public class KafkaRouterConfig {
             this.topic = topic;
         }
 
-        public List<String> getConsumer_endpoint() {
-            return consumer_endpoint;
+        public List<String> getConsumerEndpoint() {
+            return consumerEndpoint;
         }
 
-        public void setConsumer_endpoint(List<String> consumer_endpoint) {
-            this.consumer_endpoint = consumer_endpoint;
+        public void setConsumerEndpoint(List<String> consumerEndpoint) {
+            this.consumerEndpoint = consumerEndpoint;
         }
     }
 }

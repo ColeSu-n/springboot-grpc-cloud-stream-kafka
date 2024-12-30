@@ -11,7 +11,7 @@ import org.springframework.beans.BeansException;
 
 import com.ipman.rpc.grpc.springboot.config.KafkaConfig;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
-import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.ReceiveRouter;
+import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.RecieveRouter;
 
 import cn.hutool.extra.spring.SpringUtil;
 
@@ -40,21 +40,20 @@ public class KafkaProducerFactory implements ApplicationContextAware {
     private static String getRandomBootstrapServer(String topic) {
         // String appName = SpringUtil.getProperty("msg-router.recieve_routers");
 
-       Map<String,KafkaRouterConfig> beansOfType = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
-       KafkaRouterConfig kafkaRouterConfig = beansOfType.get("kafkaRouterConfig");
-       Map<String,KafkaConfig> beansOfType2 = SpringUtil.getBeansOfType(KafkaConfig.class);
-       System.out.println(beansOfType2);
-       KafkaConfig kafkaConfig = beansOfType2.get("kafkaConfig");
+       Map<String,KafkaRouterConfig> beansOfKafkaRouterConfig = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
+       KafkaRouterConfig kafkaRouterConfig = beansOfKafkaRouterConfig.get("kafkaRouterConfig");
+       Map<String,KafkaConfig> beansOfKafkaConfig = SpringUtil.getBeansOfType(KafkaConfig.class);
+       KafkaConfig kafkaConfig = beansOfKafkaConfig.get("kafkaConfig");
          // 通过 Spring 获取 KafkaRouterConfig 实例
         // KafkaRouterConfig kafkaRouterConfig = applicationContext.getBean(KafkaRouterConfig.class);
-        List<ReceiveRouter> recieve_routers = kafkaRouterConfig.getRecieve_routers();
-        for (ReceiveRouter r : recieve_routers) {
+        List<RecieveRouter> recieveRouters = kafkaRouterConfig.getRecieveRouters();
+        for (RecieveRouter r : recieveRouters) {
            if (r.getTopic().contains(topic)) {
-               return r.getKafkaClusters();
+               return r.getKafkaClusters().get(0);
            };
         }
-        int randomIndex = RANDOM.nextInt(kafkaConfig.getProducer().size());
-        return kafkaConfig.getProducer().get(randomIndex);
+        int randomIndex = RANDOM.nextInt(kafkaConfig.getClusters().size());
+        return kafkaConfig.getClusters().get(randomIndex);
     }
 
     /**

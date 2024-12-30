@@ -45,10 +45,9 @@ public class GrpcClientServiceImpl2 implements IGrpcClientService {
 
     @Override
     public Map sendObject(Map mapData) {
-        // 从mapData中获取endpointUrl，假设键名为"endpointUrl"，根据实际情况调整键名
         String endpointUrl = (String) mapData.get("endpoint");
         if (endpointUrl == null) {
-            throw new IllegalArgumentException("endpointUrl not found in mapData");
+            throw new IllegalArgumentException("endpoint not found in mapData");
         }
         // 根据获取到的endpointUrl创建Channel实例
         Channel sc = createChannel(endpointUrl);

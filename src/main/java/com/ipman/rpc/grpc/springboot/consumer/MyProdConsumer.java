@@ -1,16 +1,11 @@
 package com.ipman.rpc.grpc.springboot.consumer;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
-import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
-import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl;
+
+import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.TopicPartition;
@@ -24,14 +19,12 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-import org.springframework.http.MediaType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import com.google.protobuf.Any;
 
 /**
  * The type My consumer.
@@ -52,8 +45,6 @@ public class MyProdConsumer {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(MyProdConsumer.class);
-
-    private final AtomicInteger counter = new AtomicInteger(0);
 
     /**
      * Consume.
@@ -81,9 +72,9 @@ public class MyProdConsumer {
             // grpcClientService.sendMessage(new String(bytes));
             Map<String,String> hashMap = new HashMap<String,String>();
             hashMap.put("data",new String(bytes));
-           for (SendRouter send_routers : kafkaRouterConfig.getSend_routers()) {
+           for (SendRouter send_routers : kafkaRouterConfig.getSendRouters()) {
                if (send_routers.getTopic().contains(topics.get(i))) {
-                   hashMap.put("endpoint",send_routers.getConsumer_endpoint().get(0));
+                   hashMap.put("endpoint",send_routers.getConsumerEndpoint().get(0));
                    break;
                }
            }
@@ -104,27 +95,4 @@ public class MyProdConsumer {
         //     LOGGER.info("consumer message total:{}", counter.addAndGet(payloads.size()));
         // }
     }
-
-    private void pause(List<String> topics, List<Integer> partitionIds, Consumer<?, ?> consumer, boolean pause) {
-        LOGGER.info("pause begin--{}", pause);
-        if (!pause) {
-            return;
-        }
-
-        Set<TopicPartition> paused = consumer.paused();
-        LOGGER.info("pause--Consumer.paused.size:{}", paused.size());
-        for (int i = 0; i < topics.size(); i++) {
-            String topic = topics.get(i);
-            Integer partitionId = partitionIds.get(i);
-            final TopicPartition topicPartition = new TopicPartition(topic, partitionId);
-            // 当前 Kafka Consumer 暂停的 TopicPartition 不包含当前 TopicPartition 时，才进行暂停
-            if (!paused.contains(topicPartition)) {
-                consumer.pause(Collections.singletonList(topicPartition));
-                LOGGER.info("pause TopicPartition:{} switch to paused.paused.size:{}", topicPartition, consumer.paused().size());
-            }
-        }
-
-    }
-
-
 }

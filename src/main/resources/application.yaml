@@ -3,17 +3,17 @@ server:
 grpc:
   server: 
     port: 9094
-  client:
-    local-grpc-server:
-      address: static://172.20.154.162:9090
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-    other-grpc-server:
-      address: static://172.20.154.160:9090
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
+  # client:
+  #   local-grpc-server:
+  #     address: static://172.20.154.162:9090
+  #     enableKeepAlive: true
+  #     keepAliveWithoutCalls: true
+  #     negotiationType: plaintext
+  #   other-grpc-server:
+  #     address: static://172.20.154.160:9090
+  #     enableKeepAlive: true
+  #     keepAliveWithoutCalls: true
+  #     negotiationType: plaintext
 
 spring:
   cloud:
@@ -66,23 +66,23 @@ spring:
                           group: test2
       bindings:
         my-prod-input:
-          destination: test1
+          destination: test.*
           binder: kafka1
           group: test
           consumer:
             batch-mode: true
         my-prod-input2:
-          destination: asd1
+          destination: asd.*
           binder: kafka2
           group: test2
           consumer:
             batch-mode: true
-        my-prod-output:
-          destination: test1
-          binder: kafka1  # 绑定到第一个 Kafka 集群
-        my-prod-output2:
-          destination: test1
-          binder: kafka2  # 绑定到第二个 Kafka 集群
+        # my-prod-output:
+        #   destination: test1
+        #   binder: kafka1  # 绑定到第一个 Kafka 集群
+        # my-prod-output2:
+        #   destination: test1
+        #   binder: kafka2  # 绑定到第二个 Kafka 集群
 
 enable_offset:
   kafka1: 
@@ -99,27 +99,31 @@ management:
       show-details: always  # 显示详细健康信息
 
 msg-router: 
-  recieve_routers:
-    - kafkaClusters: "172.20.154.160:9092"
+  recieveRouters:
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
       topic: 
         - test1
-    - kafkaClusters: "172.20.154.162:9092"
+        - test2
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
       topic:
         - asd1
-  send_routers:
-    - kafkaClusters: "172.20.154.160:9092"
+        - asd2
+  sendRouters:
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
       topic: 
         - test1
-      consumer_endpoint:
+        - test2
+      consumerEndpoint:
         - 172.20.154.160:9090
-    - kafkaClusters: "172.20.154.162:9092"
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
       topic:
         - asd1
-      consumer_endpoint:
+        - asd2
+      consumerEndpoint:
         - 172.20.154.162:9090
 
 kafka:
-  producer:
+  clusters:
     - ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
     - ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
 # server.port=8801
