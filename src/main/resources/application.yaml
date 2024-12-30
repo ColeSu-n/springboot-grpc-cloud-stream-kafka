@@ -93,23 +93,20 @@ offset:
     enabled: false
 management:
   endpoint:
+    health:
+      show-details: always  # 显示详细健康信息
     metrics:
       enabled: true
     prometheus:
-      enabled: true
-    health:
-      show-details: always  # 显示详细健康信息
+      enabled: true  # 启用 Prometheus 端点
   endpoints:
     web:
       exposure:
-        include: "*" # 暴露健康检查、指标、环境信息和应用信息等
-      discovery:
-        enabled: true
-  metrics: 
+        include: "metrics, env, info, prometheus" # 暴露健康检查、指标、环境信息和应用信息等
+  metrics:
     export:
-      simple:
-        enabled: false
-
+      prometheus:
+        enabled: true  # 启用 Prometheus 指标导出
 msg-router: 
   recieveRouters:
     - kafkaClusters: ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
