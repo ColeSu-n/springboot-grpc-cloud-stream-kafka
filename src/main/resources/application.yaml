@@ -72,7 +72,7 @@ spring:
           consumer:
             batch-mode: true
         my-prod-input2:
-          destination: test1
+          destination: asd1
           binder: kafka2
           group: test2
           consumer:
@@ -105,7 +105,7 @@ msg-router:
         - test1
     - kafkaClusters: "172.20.154.162:9092"
       topic:
-        - test2
+        - asd1
   send_routers:
     - kafkaClusters: "172.20.154.160:9092"
       topic: 
@@ -114,7 +114,7 @@ msg-router:
         - 172.20.154.160:9090
     - kafkaClusters: "172.20.154.162:9092"
       topic:
-        - test2
+        - asd1
       consumer_endpoint:
         - 172.20.154.162:9090
 

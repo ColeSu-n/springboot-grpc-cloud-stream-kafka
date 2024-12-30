@@ -24,11 +24,13 @@ public class KafkaListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaListener.class);
 
 
-    private boolean seekExecuted = false; // 标志变量，确保只执行一次 seek
+    private boolean seekExecuted = true; // 标志变量，确保只执行一次 seek
 
     
-    // @Value("${enable_offset.kafka1.offset}")
-    private Long offset=0L;
+    @Value("${enable_offset.kafka1.offset}")
+    private Long offset1;
+    @Value("${enable_offset.kafka2.offset}")
+    private Long offset2;
     @Bean
     public ApplicationListener<ListenerContainerIdleEvent> idleListener1() {
         boolean resume = true;
@@ -51,7 +53,7 @@ public class KafkaListener {
             // 偏移量设置为 0 或任何你想要的值
             for (TopicPartition topicPartition : assignment) {
                 // 设定偏移量
-                consumer.seek(topicPartition, offset);
+                consumer.seek(topicPartition, offset1);
             }
 
             // 标记 seek 已经执行过
@@ -86,10 +88,32 @@ public class KafkaListener {
         boolean resume = true;
 
         return event -> {
+
             Consumer<?,?> consumer = event.getConsumer();
+
+            // TopicPartition topicPartition = new TopicPartition("test1", 0);
+            // consumer.seek(topicPartition, startOffset);
             String groupId = consumer.groupMetadata().groupId();
             if ("test2".equals(groupId)) {
-                
+            
+
+        // 确保 seek 只调用一次
+        if (!seekExecuted) {
+            // 获取消费者分配的分区
+            Set<TopicPartition> assignment = consumer.assignment();
+
+            // 偏移量设置为 0 或任何你想要的值
+            for (TopicPartition topicPartition : assignment) {
+                // 设定偏移量
+                consumer.seek(topicPartition, offset2);
+            }
+
+            // 标记 seek 已经执行过
+            seekExecuted = true;
+
+            LOGGER.info("Seek has been executed once.");
+        }
+
             Set<TopicPartition> pausedSet = consumer.paused();
 
             if (resume &&!pausedSet.isEmpty()) {

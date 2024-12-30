@@ -76,14 +76,7 @@ public class MyProdConsumer2 {
             @Header(KafkaHeaders.ACKNOWLEDGMENT) Acknowledgment acknowledgment
     ) {
         LOGGER.info("consume payloads size: {}", payloads.size());
-        // pause consume
-        // pause(topics, partitionIds, consumer, true);
-        Set<TopicPartition> assignment = consumer.assignment();
-        long offset = 0;
-        for (TopicPartition topicPartition : assignment) {
-            // 然后指定偏移量
-            // consumer.seek(topicPartition, offset);
-        }
+
         for (int i = 0; i < payloads.size(); i++) {
             byte[] bytes = (byte[]) payloads.get(i);
             LOGGER.info("payload:{} from topic:{}, partitionId:{}, groupId:{}", new String(bytes), topics.get(i), partitionIds.get(i), groupId);

@@ -8,17 +8,17 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.beans.BeansException;
+
+import com.ipman.rpc.grpc.springboot.config.KafkaConfig;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.ReceiveRouter;
 
 import cn.hutool.extra.spring.SpringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Arrays;
 
 /**
  * Kafka生产者工厂类
@@ -26,12 +26,6 @@ import java.util.Arrays;
 public class KafkaProducerFactory implements ApplicationContextAware {
     // Spring的ApplicationContext对象
     private static ApplicationContext applicationContext;
-    // Kafka集群地址列表
-    // private  static  List<String> KAFKA_BOOTSTRAP_SERVERS_LIST;
-    public static  List<String> KAFKA_BOOTSTRAP_SERVERS_LIST =new ArrayList<String>(Arrays.asList(
-            "172.20.154.160:9092",
-            "172.20.154.162:9092"
-    ));
     
     // 默认的ack机制
     private static final String DEFAULT_ACKS = "all";
@@ -45,8 +39,12 @@ public class KafkaProducerFactory implements ApplicationContextAware {
      */
     private static String getRandomBootstrapServer(String topic) {
         // String appName = SpringUtil.getProperty("msg-router.recieve_routers");
+
        Map<String,KafkaRouterConfig> beansOfType = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
        KafkaRouterConfig kafkaRouterConfig = beansOfType.get("kafkaRouterConfig");
+       Map<String,KafkaConfig> beansOfType2 = SpringUtil.getBeansOfType(KafkaConfig.class);
+       System.out.println(beansOfType2);
+       KafkaConfig kafkaConfig = beansOfType2.get("kafkaConfig");
          // 通过 Spring 获取 KafkaRouterConfig 实例
         // KafkaRouterConfig kafkaRouterConfig = applicationContext.getBean(KafkaRouterConfig.class);
         List<ReceiveRouter> recieve_routers = kafkaRouterConfig.getRecieve_routers();
@@ -55,8 +53,8 @@ public class KafkaProducerFactory implements ApplicationContextAware {
                return r.getKafkaClusters();
            };
         }
-        int randomIndex = RANDOM.nextInt(KAFKA_BOOTSTRAP_SERVERS_LIST.size());
-        return KAFKA_BOOTSTRAP_SERVERS_LIST.get(randomIndex);
+        int randomIndex = RANDOM.nextInt(kafkaConfig.getProducer().size());
+        return kafkaConfig.getProducer().get(randomIndex);
     }
 
     /**
