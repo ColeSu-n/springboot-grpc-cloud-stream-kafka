@@ -78,4 +78,41 @@ public class MyProdConsumer {
         }
         acknowledgment.acknowledge();
     }
+
+    /**
+     * Consume.
+     *
+     * @param payloads       the payloads
+     * @param topics         the topics
+     * @param partitionIds   the partition ids
+     * @param groupId        the group id
+     * @param acknowledgment the acknowledgment
+     */
+    @StreamListener(MyProdSink.INPUT2)
+    public void consume2(
+            @Payload List<Object> payloads,
+            @Header(KafkaHeaders.RECEIVED_TOPIC) List<String> topics,
+            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitionIds,
+            @Header(KafkaHeaders.GROUP_ID) String groupId,
+            @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer,
+            @Header(KafkaHeaders.ACKNOWLEDGMENT) Acknowledgment acknowledgment
+    ) {
+        LOGGER.info("consume payloads size: {}", payloads.size());
+
+        for (int i = 0; i < payloads.size(); i++) {
+            byte[] bytes = (byte[]) payloads.get(i);
+            LOGGER.info("payload:{} from topic:{}, partitionId:{}, groupId:{}", new String(bytes), topics.get(i), partitionIds.get(i), groupId);
+            // grpcClientService.sendMessage(new String(bytes));
+            Map<String,String> hashMap = new HashMap<String,String>();
+            hashMap.put("data",new String(bytes));
+            for (SendRouter routers : kafkaRouterConfig.getSendRouters()) {
+               if (routers.getTopic().contains(topics.get(i))) {
+                   hashMap.put("endpoint",routers.getConsumerEndpoint().get(0));
+                   break;
+               }
+           }
+            grpcClientService.sendObject(hashMap);
+        }
+        acknowledgment.acknowledge();
+    }
 }

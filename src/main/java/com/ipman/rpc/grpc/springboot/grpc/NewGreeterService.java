@@ -1,4 +1,4 @@
-package com.ipman.rpc.grpc.springboot.server;
+package com.ipman.rpc.grpc.springboot.grpc;
 
 import java.util.Map;
 

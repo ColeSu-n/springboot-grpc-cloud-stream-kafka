@@ -1,8 +1,6 @@
 package com.ipman.rpc.grpc.springboot.service.impl;
 
-import com.ipman.rpc.grpc.springboot.lib.GreeterGrpc;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc;
-import com.ipman.rpc.grpc.springboot.lib.GreeterOuterClass;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc.NewGreeterBlockingStub;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass.NewHelloReply;
