@@ -3,8 +3,11 @@ package com.ipman.rpc.grpc.springboot.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+
 import java.util.List;
 
+@RefreshScope
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "kafka-consumer")
 @Component

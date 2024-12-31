@@ -9,6 +9,8 @@ spring:
   application:
     name: springboot-cloud-stream-grpc-kafka
   cloud:
+    refresh:
+      enabled: true
     stream:
       binders:
         kafka1:
@@ -92,9 +94,12 @@ management:
     prometheus:
       enabled: true  # 启用 Prometheus 端点
   endpoints:
+    enabled-by-default: true  # 启用所有端点
     web:
+      base-path: /actuator
       exposure:
-        include: "metrics, env, info, prometheus, refresh" # 暴露健康检查、指标、环境信息和应用信息等
+        include: "*" # 暴露所有端点
+        exclude: env,beans
   metrics:
     export:
       prometheus:

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 
 /**
  * Created by ipipman on 2020/12/15.
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
  * @Description: (用一句话描述该文件做什么)
  * @date 2020/12/15 6:34 下午
  */
+
+@RefreshScope
 @RestController
 public class GrpcClientController {
     @Value("${test.name}")
