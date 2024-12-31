@@ -70,6 +70,15 @@ offset:
   kafka2:
     offset: 0
     enabled: true
+
+kafka-consumer:
+  consumers:
+    - groupId: ${spring.cloud.stream.bindings.my-prod-input.group}
+      seekExecuted: ${offset.kafka1.enabled}
+      offset: ${offset.kafka1.offset}
+    - groupId: ${spring.cloud.stream.bindings.my-prod-input2.group}
+      seekExecuted: ${offset.kafka2.enabled}
+      offset: ${offset.kafka2.offset}
 management:
   endpoint:
     health:
