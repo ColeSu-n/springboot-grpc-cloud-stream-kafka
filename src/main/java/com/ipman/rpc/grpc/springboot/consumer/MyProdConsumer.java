@@ -8,7 +8,6 @@ import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
 
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,9 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The type My consumer.
@@ -81,18 +77,5 @@ public class MyProdConsumer {
             grpcClientService.sendObject(hashMap);
         }
         acknowledgment.acknowledge();
-        // System.out.println(rawData.toString());
-        // String url = "http://172.20.154.162:8081/example/api";
-        // HttpHeaders headers = new HttpHeaders();
-        // headers.setContentType(MediaType.APPLICATION_JSON);
-        // Map<String, Object> requestBody = new HashMap<>();
-        // requestBody.put("msg", payloads);
-        // HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody,headers);
-        // ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        // if ( response.getStatusCode()==HttpStatus.OK) {
-        //     // 手动提交消息消费确认
-        //     acknowledgment.acknowledge();
-        //     LOGGER.info("consumer message total:{}", counter.addAndGet(payloads.size()));
-        // }
     }
 }

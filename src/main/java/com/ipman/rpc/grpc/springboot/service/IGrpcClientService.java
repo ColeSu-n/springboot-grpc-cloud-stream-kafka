@@ -11,7 +11,5 @@ import java.util.Map;
  * @date 2020/12/15 6:28 下午
  */
 public interface IGrpcClientService {
-    String sendMessage(String name);
-
     Map sendObject(Map mapData);
 }

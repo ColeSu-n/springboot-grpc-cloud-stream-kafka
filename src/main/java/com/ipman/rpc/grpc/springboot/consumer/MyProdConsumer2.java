@@ -17,14 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
 import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl2;
 
-import io.grpc.Channel;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The type My consumer.
@@ -80,17 +75,5 @@ public class MyProdConsumer2 {
             grpcClientService.sendObject(hashMap);
         }
         acknowledgment.acknowledge();
-        // String url = "http://172.20.154.162:8081/example/api";
-        // HttpHeaders headers = new HttpHeaders();
-        // headers.setContentType(MediaType.APPLICATION_JSON);
-        // Map<String, Object> requestBody = new HashMap<>();
-        // requestBody.put("msg", payloads);
-        // HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody,headers);
-        // ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        // if ( response.getStatusCode()==HttpStatus.OK) {
-        //     // 手动提交消息消费确认
-        //     acknowledgment.acknowledge();
-        //     LOGGER.info("consumer message total:{}", counter.addAndGet(payloads.size()));
-        // }
     }
 }

@@ -5,9 +5,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationContext;
-import org.springframework.beans.BeansException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ipman.rpc.grpc.springboot.config.KafkaConfig;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
@@ -23,9 +22,11 @@ import java.util.Random;
 /**
  * Kafka生产者工厂类
  */
-public class KafkaProducerFactory implements ApplicationContextAware {
-    // Spring的ApplicationContext对象
-    private static ApplicationContext applicationContext;
+public class KafkaProducerFactory  {
+    /**
+     * logger
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducerFactory.class);
     
     // 默认的ack机制
     private static final String DEFAULT_ACKS = "all";
@@ -34,18 +35,14 @@ public class KafkaProducerFactory implements ApplicationContextAware {
     private static final Random RANDOM = new Random();
 
     /**
-     * 随机选择一个Kafka服务器地址
-     * @return 随机选择的Kafka服务器地址
+     * 根据配置文件中的规则选择kafka集群
+     * @return 根据配置文件中的规则选择kafka集群
      */
     private static String getRandomBootstrapServer(String topic) {
-        // String appName = SpringUtil.getProperty("msg-router.recieve_routers");
-
        Map<String,KafkaRouterConfig> beansOfKafkaRouterConfig = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
        KafkaRouterConfig kafkaRouterConfig = beansOfKafkaRouterConfig.get("kafkaRouterConfig");
        Map<String,KafkaConfig> beansOfKafkaConfig = SpringUtil.getBeansOfType(KafkaConfig.class);
        KafkaConfig kafkaConfig = beansOfKafkaConfig.get("kafkaConfig");
-         // 通过 Spring 获取 KafkaRouterConfig 实例
-        // KafkaRouterConfig kafkaRouterConfig = applicationContext.getBean(KafkaRouterConfig.class);
         List<RecieveRouter> recieveRouters = kafkaRouterConfig.getRecieveRouters();
         for (RecieveRouter r : recieveRouters) {
            if (r.getTopic().contains(topic)) {
@@ -83,39 +80,14 @@ public class KafkaProducerFactory implements ApplicationContextAware {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
                     if (exception == null) {
-                        System.out.println("消息发送成功: " + metadata);
+                        LOGGER.info("消息发送成功: " + metadata);
                     } else {
-                        System.err.println("消息发送失败: " + exception.getMessage());
+                        LOGGER.info("消息发送失败: " + exception.getMessage());
                     }
                 }
             });
         } catch (Exception e) {
-            System.err.println("Kafka生产者发生异常: " + e.getMessage());
+            LOGGER.error("Kafka生产者发生异常: " + e.getMessage());
         }
-    }
-
-
-        /**
-     * 实现 ApplicationContextAware 接口的方法
-     * @param applicationContext Spring的ApplicationContext对象
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext)throws BeansException {
-        KafkaProducerFactory.applicationContext = applicationContext;
-    }
-
-    /**
-     * 获取 Spring 管理的 Bean
-     * 示例：从 Spring 容器中获取某个 Bean
-     * @param beanName Bean的名称
-     * @param beanClass Bean的类型
-     * @param <T> Bean的类型
-     * @return 返回对应的 Bean 实例
-     */
-    public static <T> T getBean(String beanName, Class<T> beanClass) {
-        if (applicationContext != null) {
-            return applicationContext.getBean(beanName, beanClass);
-        }
-        return null;
     }
 }

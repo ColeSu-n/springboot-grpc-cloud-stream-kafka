@@ -32,6 +32,10 @@ public class KafkaListener {
     private Long offsetForKafka1;
     @Value("${offset.kafka2.offset}")
     private Long offsetForKafka2;
+    @Value("${spring.cloud.stream.bindings.my-prod-input.group}")
+    private String groupId1;
+    @Value("${spring.cloud.stream.bindings.my-prod-input2.group}")
+    private String groupId2;
     @Bean
     public ApplicationListener<ListenerContainerIdleEvent> idleListener1() {
         boolean resume = true;
@@ -40,7 +44,7 @@ public class KafkaListener {
 
             Consumer<?,?> consumer = event.getConsumer();
             String groupId = consumer.groupMetadata().groupId();
-            if ("test".equals(groupId)) {
+            if (groupId1.equals(groupId)) {
 
         // 确保 seek 只调用一次
         if (seekExecutedForKafka1) {
@@ -88,7 +92,7 @@ public class KafkaListener {
 
             Consumer<?,?> consumer = event.getConsumer();
             String groupId = consumer.groupMetadata().groupId();
-            if ("test2".equals(groupId)) {
+            if (groupId2.equals(groupId)) {
 
         // 确保 seek 只调用一次
         if (seekExecutedForKafka2) {

@@ -1,13 +1,13 @@
 package com.ipman.rpc.grpc.springboot.api;
 
-import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ipipman on 2020/12/15.
@@ -30,7 +30,9 @@ public class GrpcClientController {
      * @return
      */
     @GetMapping("/")
-    public String printMessage(@RequestParam(defaultValue = "ipman") String name) {
-        return grpcClientService.sendMessage(name);
+    public Map printMessage(@RequestParam(defaultValue = "ipman") String name) {
+     Map<String,String> hashMap = new HashMap<String,String>();
+     hashMap.put("data",name);
+        return grpcClientService.sendObject(hashMap);
     }
 }

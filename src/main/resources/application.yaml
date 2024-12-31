@@ -3,24 +3,9 @@ server:
 grpc:
   server: 
     port: 9094
-  # client:
-  #   local-grpc-server:
-  #     address: static://172.20.154.162:9090
-  #     enableKeepAlive: true
-  #     keepAliveWithoutCalls: true
-  #     negotiationType: plaintext
-  #   other-grpc-server:
-  #     address: static://172.20.154.160:9090
-  #     enableKeepAlive: true
-  #     keepAliveWithoutCalls: true
-  #     negotiationType: plaintext
-
 spring:
   cloud:
     stream:
-      # default:
-      #   producer:
-      #     error-channel-enabled: true
       binders:
         kafka1:
           type: kafka
@@ -77,20 +62,14 @@ spring:
           group: test2
           consumer:
             batch-mode: true
-        # my-prod-output:
-        #   destination: test1
-        #   binder: kafka1  # 绑定到第一个 Kafka 集群
-        # my-prod-output2:
-        #   destination: test1
-        #   binder: kafka2  # 绑定到第二个 Kafka 集群
 
 offset:
   kafka1: 
     offset: 0
-    enabled: false
+    enabled: true
   kafka2:
     offset: 0
-    enabled: false
+    enabled: true
 management:
   endpoint:
     health:
@@ -102,7 +81,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "metrics, env, info, prometheus" # 暴露健康检查、指标、环境信息和应用信息等
+        include: "metrics, env, info, prometheus, refresh" # 暴露健康检查、指标、环境信息和应用信息等
   metrics:
     export:
       prometheus:
@@ -135,9 +114,3 @@ kafka:
   clusters:
     - ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
     - ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
-# server.port=8801
-
-# grpc.client.local-grpc-server.host=127.0.0.1
-# grpc.client.local-grpc-server.port=8800
-# grpc.client.local-grpc-server.enableKeepAlive=true
-# grpc.client.local-grpc-server.keepAliveWithoutCalls=true
