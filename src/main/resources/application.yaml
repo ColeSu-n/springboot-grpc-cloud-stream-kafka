@@ -1,8 +1,8 @@
 server:
-  port: 8801
+  port: 8801                       # http 端口
 grpc:
   server: 
-    port: 9094
+    port: 9094                     # grpc 端口
 spring:
   cloud:
     stream:
@@ -118,8 +118,3 @@ msg-router:
         - asd2
       consumerEndpoint:
         - 172.20.154.162:9090
-
-kafka:
-  clusters:
-    - ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
-    - ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}

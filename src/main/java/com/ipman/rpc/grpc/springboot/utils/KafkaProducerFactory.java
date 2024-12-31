@@ -8,12 +8,11 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ipman.rpc.grpc.springboot.config.KafkaConfig;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.RecieveRouter;
 
 import cn.hutool.extra.spring.SpringUtil;
-
+import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -41,16 +40,13 @@ public class KafkaProducerFactory  {
     private static String getRandomBootstrapServer(String topic) {
        Map<String,KafkaRouterConfig> beansOfKafkaRouterConfig = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
        KafkaRouterConfig kafkaRouterConfig = beansOfKafkaRouterConfig.get("kafkaRouterConfig");
-       Map<String,KafkaConfig> beansOfKafkaConfig = SpringUtil.getBeansOfType(KafkaConfig.class);
-       KafkaConfig kafkaConfig = beansOfKafkaConfig.get("kafkaConfig");
         List<RecieveRouter> recieveRouters = kafkaRouterConfig.getRecieveRouters();
         for (RecieveRouter r : recieveRouters) {
            if (r.getTopic().contains(topic)) {
                return r.getKafkaClusters().get(0);
            };
         }
-        int randomIndex = RANDOM.nextInt(kafkaConfig.getClusters().size());
-        return kafkaConfig.getClusters().get(randomIndex);
+        return "";
     }
 
     /**
@@ -62,7 +58,10 @@ public class KafkaProducerFactory  {
     public static void sendMessage(String topic, String key, String value) {
         // 获取一个随机的Kafka服务器地址
         String bootstrapServers = getRandomBootstrapServer( topic);
-
+        if (StringUtils.isBlank(bootstrapServers)) {
+            LOGGER.info("Kafka服务器地址为空,无法输入消息");
+            throw new RuntimeException("Kafka服务器地址为空,无法输入消息");
+        }
         // 配置Kafka生产者的属性
         Properties properties = new Properties();
         properties.put("bootstrap.servers", bootstrapServers);  // Kafka服务器地址
