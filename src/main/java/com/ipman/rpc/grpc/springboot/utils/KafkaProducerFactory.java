@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
 /**
  * Kafka生产者工厂类
@@ -29,9 +28,6 @@ public class KafkaProducerFactory  {
     
     // 默认的ack机制
     private static final String DEFAULT_ACKS = "all";
-
-    // 随机数生成器
-    private static final Random RANDOM = new Random();
 
     /**
      * 根据配置文件中的规则选择kafka集群

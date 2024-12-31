@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * Created by ipipman on 2020/12/15.
  *
@@ -19,7 +21,8 @@ import java.util.Map;
  */
 @RestController
 public class GrpcClientController {
-
+    @Value("${test.name }")
+    private String testName;
     @Autowired
     private IGrpcClientService grpcClientService;
 
@@ -34,5 +37,12 @@ public class GrpcClientController {
      Map<String,String> hashMap = new HashMap<String,String>();
      hashMap.put("data",name);
         return grpcClientService.sendObject(hashMap);
+    }
+    
+    @GetMapping("/testconfig")
+    public String testConfig() {
+     //测试配置文件热更新
+     System.out.println("====================="+testName);
+     return testName;
     }
 }

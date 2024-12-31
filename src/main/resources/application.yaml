@@ -1,9 +1,13 @@
+test:
+  name: test
 server:
   port: 8801                       # http 端口
 grpc:
   server: 
     port: 9094                     # grpc 端口
 spring:
+  application:
+    name: springboot-cloud-stream-grpc-kafka
   cloud:
     stream:
       binders:

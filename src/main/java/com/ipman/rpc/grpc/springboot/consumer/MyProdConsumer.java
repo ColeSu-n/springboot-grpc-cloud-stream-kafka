@@ -5,9 +5,6 @@ import org.springframework.web.client.RestTemplate;
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
 import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 
-import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
-
-import org.apache.kafka.clients.consumer.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
