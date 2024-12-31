@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @RestController
 public class GrpcClientController {
-    @Value("${test.name }")
+    @Value("${test.name}")
     private String testName;
     @Autowired
     private IGrpcClientService grpcClientService;
