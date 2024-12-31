@@ -24,7 +24,6 @@ import java.util.Map;
 public class GrpcClientServiceImpl implements IGrpcClientService {
     /**
      * 通过本地存protocol buffer存根序列化后调用gRPC服务端
-     * 没用了，等会删
      * @param mapData
      * @return
      */
