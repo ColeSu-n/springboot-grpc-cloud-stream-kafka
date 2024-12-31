@@ -3,7 +3,7 @@ package com.ipman.rpc.grpc.springboot.consumer;
 import org.springframework.web.client.RestTemplate;
 
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig;
-import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl;
+import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 
 import com.ipman.rpc.grpc.springboot.config.KafkaRouterConfig.SendRouter;
 
@@ -36,7 +36,7 @@ public class MyProdConsumer {
     @Autowired
     RestTemplate restTemplate;
     @Autowired
-    private GrpcClientServiceImpl grpcClientService;
+    private IGrpcClientService grpcClientService;
     /**
      * logger
      */

@@ -1,6 +1,6 @@
 package com.ipman.rpc.grpc.springboot.api;
 
-import com.ipman.rpc.grpc.springboot.service.impl.GrpcClientServiceImpl;
+import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class GrpcClientController {
 
     @Autowired
-    private GrpcClientServiceImpl grpcClientService;
+    private IGrpcClientService grpcClientService;
 
     /**
      * Testing
