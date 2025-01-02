@@ -52,9 +52,14 @@ public class NewGreeterService extends NewGreeterGrpc.NewGreeterImplBase {
         NewGreeterOuterClass.NewHelloReply reply = NewGreeterOuterClass.NewHelloReply.newBuilder().putAllRequestData(requestDataMap).build();
 
         // 通过 responseObserver 发送响应给客户端
-        KafkaProducerFactory.sendMessage( topicString, "", request.toString());
-        responseObserver.onNext(reply);
-        responseObserver.onCompleted();
+        try {
+            KafkaProducerFactory.sendMessage( topicString, "", request.toString());
+            responseObserver.onNext(reply);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            // TODO: handle exception
+            responseObserver.onError(e);
+        }
     }
 
 }

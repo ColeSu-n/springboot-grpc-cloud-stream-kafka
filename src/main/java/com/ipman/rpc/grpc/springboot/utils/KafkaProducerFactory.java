@@ -51,7 +51,7 @@ public class KafkaProducerFactory  {
      * @param key 消息的Key
      * @param value 消息的内容
      */
-    public static void sendMessage(String topic, String key, String value) {
+    public static void sendMessage(String topic, String key, String value)throws Exception {
         String bootstrapServers = getRandomBootstrapServer( topic);
         if (StringUtils.isBlank(bootstrapServers)) {
             LOGGER.info("Kafka服务器地址为空,无法输入消息");
@@ -82,6 +82,7 @@ public class KafkaProducerFactory  {
             });
         } catch (Exception e) {
             LOGGER.error("Kafka生产者发生异常: " + e.getMessage());
+            throw e;
         }
     }
 }
