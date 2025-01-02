@@ -52,7 +52,6 @@ public class KafkaProducerFactory  {
      * @param value 消息的内容
      */
     public static void sendMessage(String topic, String key, String value) {
-        // 获取一个随机的Kafka服务器地址
         String bootstrapServers = getRandomBootstrapServer( topic);
         if (StringUtils.isBlank(bootstrapServers)) {
             LOGGER.info("Kafka服务器地址为空,无法输入消息");
