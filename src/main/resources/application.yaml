@@ -9,6 +9,17 @@ spring:
   application:
     name: springboot-cloud-stream-grpc-kafka
   cloud:
+    consul:
+      discovery:
+        tags:
+        - grpcport=${grpc.server.port}
+        register: true
+        deregister: true
+        enabled: true
+        prefer-ip-address: true
+        instance-id: spring/${spring.cloud.client.ip-address}:${grpc.server.port}
+      host: 172.20.154.162
+      port: 8500
     refresh:
       enabled: true
     stream:
@@ -72,10 +83,10 @@ spring:
 offset:
   kafka1: 
     offset: 0
-    enabled: true
+    enabled: false
   kafka2:
     offset: 0
-    enabled: true
+    enabled: false
 
 kafka-consumer:
   consumers:
@@ -120,10 +131,10 @@ msg-router:
         - test1
         - test2
       consumerEndpoint:
-        - 172.20.154.160:9090
+        - provider1
     - kafkaClusters: ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
       topic:
         - asd1
         - asd2
       consumerEndpoint:
-        - 172.20.154.162:9090
+        - provider2

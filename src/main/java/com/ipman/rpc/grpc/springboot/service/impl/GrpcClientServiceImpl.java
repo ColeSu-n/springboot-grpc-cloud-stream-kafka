@@ -1,5 +1,6 @@
 package com.ipman.rpc.grpc.springboot.service.impl;
 
+import com.ipman.rpc.grpc.springboot.consumer.MyProdConsumer;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc.NewGreeterBlockingStub;
@@ -7,9 +8,17 @@ import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass.NewHelloReply;
 import com.ipman.rpc.grpc.springboot.service.IGrpcClientService;
 import com.ipman.rpc.grpc.springboot.utils.GrpcUtil;
 
+import cn.hutool.extra.spring.SpringUtil;
 import io.grpc.Channel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +31,7 @@ import java.util.Map;
  */
 @Service
 public class GrpcClientServiceImpl implements IGrpcClientService {
+     private static final Logger LOGGER = LoggerFactory.getLogger(IGrpcClientService.class);
     /**
      * 通过本地存protocol buffer存根序列化后调用gRPC服务端
      * @param mapData
@@ -29,13 +39,24 @@ public class GrpcClientServiceImpl implements IGrpcClientService {
      */
     @Override
     public Map sendObject(Map mapData) {
-        String endpointUrl = (String) mapData.get("endpoint");
-        if (endpointUrl == null) {
-            throw new IllegalArgumentException("endpointUrl not found in mapData");
+        String endpoint = (String)mapData.get("endpoint");
+        Map<String,DiscoveryClient> beansOfTypeDiscoveryClient = SpringUtil.getBeansOfType(DiscoveryClient.class);
+        DiscoveryClient discoveryClient = beansOfTypeDiscoveryClient.get("consulDiscoveryClient");
+        if (!discoveryClient.getServices().contains(endpoint)) {
+            LOGGER.info("not found consul server instance", new RuntimeException("not found consul server instance"));
+            return new HashMap<>();
         }
-        Channel sc = GrpcUtil.createChannel(endpointUrl);
-        NewGreeterBlockingStub stub = NewGreeterGrpc.newBlockingStub(sc);
-        NewHelloReply response = stub.sayHello(NewGreeterOuterClass.NewHelloRequest.newBuilder().putAllRequestData(mapData).build());
-        return response.getRequestDataMap();
+        Map<String,Object> resp = new HashMap<String,Object>();
+        for (ServiceInstance instances : discoveryClient.getInstances(endpoint)) {
+            String instanceId = instances.getInstanceId();
+            String[] split = instanceId.split("-");
+            String grpcPort=split[split.length-1];
+            Channel sc = GrpcUtil.createChannel(instances.getHost()+":"+grpcPort);
+            NewGreeterBlockingStub stub = NewGreeterGrpc.newBlockingStub(sc);
+            NewHelloReply response = stub.sayHello(NewGreeterOuterClass.NewHelloRequest.newBuilder().putAllRequestData(mapData).build());
+            
+            resp.put("instances.getHost()+\":\"+instances.getPort()", response.getRequestDataMap());
+        }
+        return resp;
     }
 }
