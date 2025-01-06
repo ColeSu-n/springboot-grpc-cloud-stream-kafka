@@ -48,7 +48,7 @@ public interface MyProdSink {
      *
      * @return the subscribable channel
      */
-    // @Input(INPUT3)
-    // SubscribableChannel input3();
+    @Input(INPUT3)
+    SubscribableChannel input3();
 
 }

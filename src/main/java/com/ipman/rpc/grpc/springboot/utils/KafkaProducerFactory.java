@@ -34,12 +34,18 @@ public class KafkaProducerFactory  {
        Map<String,KafkaRouterConfig> beansOfKafkaRouterConfig = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
        KafkaRouterConfig kafkaRouterConfig = beansOfKafkaRouterConfig.get(GlobleConstants.KAFKA_ROUTE_CONFIG);
         List<RecieveRouter> recieveRouters = kafkaRouterConfig.getRecieveRouters();
+        String kafkaClusterBrokers=GlobleConstants.EMPTY_STRING;
+
         for (RecieveRouter r : recieveRouters) {
            if (r.getTopic().contains(topic)) {
-               return r.getKafkaClusters().get(0);
+            kafkaClusterBrokers=r.getKafkaClusters().get(0);
+            if (r.getKafkaClusters().size()>0) {
+                kafkaClusterBrokers=String.join(",", r.getKafkaClusters());
+            }
+            return kafkaClusterBrokers;
            };
         }
-        return GlobleConstants.EMPTY_STRING;
+        return kafkaClusterBrokers;
     }
 
     /**
@@ -65,7 +71,6 @@ public class KafkaProducerFactory  {
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
             // 构造ProducerRecord（即生产者发送的消息）
             ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
-
             // 发送消息，并提供回调函数
             producer.send(record, new Callback() {
                 @Override
