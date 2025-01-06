@@ -1,0 +1,169 @@
+test: 
+  name: test
+server:
+  port: 8801                       # http 端口
+grpc:
+  server: 
+    port: 9094                     # grpc 端口
+spring:
+    refresh:
+      enabled: true
+    stream:
+      binders:
+        kafka1:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder: 
+                      brokers: 172.20.154.160:9092
+                      auto-create-topics: true
+                      min-partition-count: 1
+                      replication-factor: 1
+                      configuration:
+                        acks: -1
+                        reconnect.backoff.max.ms: 120000
+                    bindings:
+                      my-prod-input:
+                        consumer:
+                          auto-commit-offset: false
+                          destination-is-pattern: true
+                          group: test
+        kafka2:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder: 
+                      brokers: 172.20.154.162:9092
+                      auto-create-topics: true
+                      min-partition-count: 1
+                      replication-factor: 1
+                      configuration:
+                        acks: -1
+                        reconnect.backoff.max.ms: 120000
+                    bindings:
+                      my-prod-input2:
+                        consumer:
+                          auto-commit-offset: false
+                          destination-is-pattern: true
+                          group: test2
+        # kafka3:
+        #   type: kafka
+        #   environment:
+        #     spring:
+        #       cloud:
+        #         stream:
+        #           kafka:
+        #             binder: 
+        #               brokers: 172.20.154.161:9092
+        #               auto-create-topics: true
+        #               min-partition-count: 1
+        #               replication-factor: 1
+        #               configuration:
+        #                 acks: -1
+        #                 reconnect.backoff.max.ms: 120000
+        #             bindings:
+        #               my-prod-input2:
+        #                 consumer:
+        #                   auto-commit-offset: false
+        #                   destination-is-pattern: true
+        #                   group: test3
+      bindings:
+        my-prod-input:
+          destination: test.*
+          binder: kafka1
+          group: test
+          consumer:
+            batch-mode: true
+        my-prod-input2:
+          destination: asd.*
+          binder: kafka2
+          group: test2
+          consumer:
+            batch-mode: true
+        # my-prod-input3:
+        #   destination: mm.*
+        #   binder: kafka3
+        #   group: test3
+        #   consumer:
+        #     batch-mode: true
+
+offset:
+  kafka1: 
+    offset: 0
+    enabled: false
+  kafka2:
+    offset: 0
+    enabled: false
+  # kafka3:
+  #   offset: 0
+  #   enabled: false
+
+kafka-consumer:
+  consumers:
+    - groupId: ${spring.cloud.stream.bindings.my-prod-input.group}
+      seekExecuted: ${offset.kafka1.enabled}
+      offset: ${offset.kafka1.offset}
+    - groupId: ${spring.cloud.stream.bindings.my-prod-input2.group}
+      seekExecuted: ${offset.kafka2.enabled}
+      offset: ${offset.kafka2.offset}
+    # - groupId: ${spring.cloud.stream.bindings.my-prod-input3.group}
+    #   seekExecuted: ${offset.kafka3.enabled}
+    #   offset: ${offset.kafka3.offset}
+management:
+  endpoint:
+    health:
+      show-details: always  # 显示详细健康信息
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true  # 启用 Prometheus 端点
+  endpoints:
+    enabled-by-default: true  # 启用所有端点
+    web:
+      base-path: /actuator
+      exposure:
+        include: "*" # 暴露所有端点
+        exclude: env,beans
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # 启用 Prometheus 指标导出
+msg-router: 
+  recieveRouters:
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
+      topic: 
+        - test1
+        - test2
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
+      topic:
+        - asd1
+        - asd2
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka3.environment.spring.cloud.stream.kafka.binder.brokers}
+      topic:
+        - mm3
+        - mm4
+  sendRouters:
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka1.environment.spring.cloud.stream.kafka.binder.brokers}
+      topic: 
+        - test1
+        - test2
+      consumerEndpoint:
+        - provider1
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka2.environment.spring.cloud.stream.kafka.binder.brokers}
+      topic:
+        - asd1
+        - asd2
+      consumerEndpoint:
+        - provider2
+    - kafkaClusters: ${spring.cloud.stream.binders.kafka3.environment.spring.cloud.stream.kafka.binder.brokers}
+      topic:
+        - mm3
+        - mm4
+      consumerEndpoint:
+        - provider3

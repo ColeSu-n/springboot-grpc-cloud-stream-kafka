@@ -100,4 +100,18 @@ public class MyProdConsumer {
     ) {
         processConsume(payloads, topics, partitionIds, groupId, acknowledgment);
     }
+
+    /**
+     * 消费第三个输入通道的消息
+     */
+    // @StreamListener(MyProdSink.INPUT3)
+    // public void consume3(
+    //         @Payload List<Object> payloads,
+    //         @Header(KafkaHeaders.RECEIVED_TOPIC) List<String> topics,
+    //         @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitionIds,
+    //         @Header(KafkaHeaders.GROUP_ID) String groupId,
+    //         @Header(KafkaHeaders.ACKNOWLEDGMENT) Acknowledgment acknowledgment
+    // ) {
+    //     processConsume(payloads, topics, partitionIds, groupId, acknowledgment);
+    // }
 }

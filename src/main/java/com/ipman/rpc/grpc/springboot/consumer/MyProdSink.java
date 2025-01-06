@@ -37,4 +37,18 @@ public interface MyProdSink {
     @Input(INPUT2)
     SubscribableChannel input2();
 
+
+    /**
+     * The constant INPUT.
+     */
+    String INPUT3 = "my-prod-input3";
+
+    /**
+     * Input subscribable channel.
+     *
+     * @return the subscribable channel
+     */
+    // @Input(INPUT3)
+    // SubscribableChannel input3();
+
 }

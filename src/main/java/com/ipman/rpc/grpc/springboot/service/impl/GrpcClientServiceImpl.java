@@ -1,6 +1,5 @@
 package com.ipman.rpc.grpc.springboot.service.impl;
 
-import com.ipman.rpc.grpc.springboot.consumer.MyProdConsumer;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterOuterClass;
 import com.ipman.rpc.grpc.springboot.lib.NewGreeterGrpc.NewGreeterBlockingStub;
@@ -18,7 +17,6 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,14 +37,14 @@ public class GrpcClientServiceImpl implements IGrpcClientService {
      */
     @Override
     public Map sendObject(Map mapData) {
+        Map<String,Object> resp = new HashMap<String,Object>();
         String endpoint = (String)mapData.get("endpoint");
         Map<String,DiscoveryClient> beansOfTypeDiscoveryClient = SpringUtil.getBeansOfType(DiscoveryClient.class);
         DiscoveryClient discoveryClient = beansOfTypeDiscoveryClient.get("consulDiscoveryClient");
         if (!discoveryClient.getServices().contains(endpoint)) {
             LOGGER.info("not found consul server instance", new RuntimeException("not found consul server instance"));
-            return new HashMap<>();
+            return resp;
         }
-        Map<String,Object> resp = new HashMap<String,Object>();
         for (ServiceInstance instances : discoveryClient.getInstances(endpoint)) {
             String instanceId = instances.getInstanceId();
             String[] split = instanceId.split("-");
