@@ -1,5 +1,5 @@
 #该配置文件为自动文件，consul.yaml中的内容为配置中心中的配置文件内容
-#如果想在配置中心读取配置文件，需要将两份文件合成一份application.yaml
+#如果不想在配置中心读取配置文件，需要将两份文件合成一份application.yaml
 spring:
   config:
     import: "optional:consul:"
