@@ -7,6 +7,8 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import java.nio.charset.Charset;
+import com.ipman.rpc.grpc.springboot.constants.GlobleConstants;
+
 /**
  * 描述：
  *
@@ -21,7 +23,7 @@ public class RestTemplateConfig {
         RestTemplate restTemplate= new RestTemplate(factory);
         // 支持中文编码
         restTemplate.getMessageConverters().set(1,
-                new StringHttpMessageConverter(Charset.forName("UTF-8")));
+                new StringHttpMessageConverter(Charset.forName(GlobleConstants.CHARSET_UTF_8)));
         return restTemplate;
 
     }

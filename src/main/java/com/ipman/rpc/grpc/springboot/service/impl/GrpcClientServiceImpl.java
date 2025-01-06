@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
-
+import com.ipman.rpc.grpc.springboot.constants.GlobleConstants;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,16 +38,16 @@ public class GrpcClientServiceImpl implements IGrpcClientService {
     @Override
     public Map sendObject(Map mapData) {
         Map<String,Object> resp = new HashMap<String,Object>();
-        String endpoint = (String)mapData.get("endpoint");
+        String endpoint = (String)mapData.get(GlobleConstants.REQUEST_DATA_ENDPOINT);
         Map<String,DiscoveryClient> beansOfTypeDiscoveryClient = SpringUtil.getBeansOfType(DiscoveryClient.class);
-        DiscoveryClient discoveryClient = beansOfTypeDiscoveryClient.get("consulDiscoveryClient");
+        DiscoveryClient discoveryClient = beansOfTypeDiscoveryClient.get(GlobleConstants.DISCONVERYCLIENT);
         if (!discoveryClient.getServices().contains(endpoint)) {
             LOGGER.info("not found consul server instance", new RuntimeException("not found consul server instance"));
             return resp;
         }
         for (ServiceInstance instances : discoveryClient.getInstances(endpoint)) {
             String instanceId = instances.getInstanceId();
-            String[] split = instanceId.split("-");
+            String[] split = instanceId.split(GlobleConstants.SPLITE_CHART);
             String grpcPort=split[split.length-1];
             Channel sc = GrpcUtil.createChannel(instances.getHost()+":"+grpcPort);
             NewGreeterBlockingStub stub = NewGreeterGrpc.newBlockingStub(sc);

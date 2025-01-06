@@ -9,7 +9,7 @@ import com.ipman.rpc.grpc.springboot.utils.KafkaProducerFactory;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
-
+import com.ipman.rpc.grpc.springboot.constants.GlobleConstants;
 /**
  * Created by ipipman on 2020/12/15.
  *
@@ -31,13 +31,13 @@ public class NewGreeterService extends NewGreeterGrpc.NewGreeterImplBase {
     @Override
     public void sayHello(NewGreeterOuterClass.NewHelloRequest request, StreamObserver<NewGreeterOuterClass.NewHelloReply> responseObserver) {
         // 获取请求中的map字段（request_data）
-        String topicString="";
+        String topicString=GlobleConstants.EMPTY_STRING;
         Map<String, String> requestDataMap = request.getRequestDataMap();
         System.out.println("Request Data Map:");
         for (Map.Entry<String, String> entry : requestDataMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if ("topic".equals(key)) {
+            if (GlobleConstants.KAFKA_TOPIC_KEY.equals(key)) {
                 topicString = value;
             }
             try {

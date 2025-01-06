@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+import com.ipman.rpc.grpc.springboot.constants.GlobleConstants;
 /**
  * Kafka生产者工厂类
  */
@@ -25,9 +25,6 @@ public class KafkaProducerFactory  {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducerFactory.class);
-    
-    // 默认的ack机制
-    private static final String DEFAULT_ACKS = "all";
 
     /**
      * 根据配置文件中的规则选择kafka集群
@@ -35,14 +32,14 @@ public class KafkaProducerFactory  {
      */
     private static String getRandomBootstrapServer(String topic) {
        Map<String,KafkaRouterConfig> beansOfKafkaRouterConfig = SpringUtil.getBeansOfType(KafkaRouterConfig.class);
-       KafkaRouterConfig kafkaRouterConfig = beansOfKafkaRouterConfig.get("kafkaRouterConfig");
+       KafkaRouterConfig kafkaRouterConfig = beansOfKafkaRouterConfig.get(GlobleConstants.KAFKA_ROUTE_CONFIG);
         List<RecieveRouter> recieveRouters = kafkaRouterConfig.getRecieveRouters();
         for (RecieveRouter r : recieveRouters) {
            if (r.getTopic().contains(topic)) {
                return r.getKafkaClusters().get(0);
            };
         }
-        return "";
+        return GlobleConstants.EMPTY_STRING;
     }
 
     /**
@@ -62,7 +59,7 @@ public class KafkaProducerFactory  {
         properties.put("bootstrap.servers", bootstrapServers);  // Kafka服务器地址
         properties.put("key.serializer", StringSerializer.class.getName());  // 消息Key的序列化方式
         properties.put("value.serializer", StringSerializer.class.getName());  // 消息Value的序列化方式
-        properties.put("acks", DEFAULT_ACKS);  // 配置消息确认机制
+        properties.put("acks", GlobleConstants.MES_ACK_POLICY);  // 配置消息确认机制
 
         // 创建KafkaProducer对象
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {

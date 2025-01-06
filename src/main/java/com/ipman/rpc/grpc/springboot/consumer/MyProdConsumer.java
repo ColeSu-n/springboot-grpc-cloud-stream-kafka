@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.ipman.rpc.grpc.springboot.constants.GlobleConstants;
 /**
  * The type My consumer.
  *
@@ -57,7 +57,7 @@ public class MyProdConsumer {
 
             // 创建要发送的 Map
             Map<String, String> hashMap = new HashMap<>();
-            hashMap.put("data", new String(bytes));
+            hashMap.put(GlobleConstants.REQUEST_DATA, new String(bytes));
 
             // 根据 topic 查找对应的 ConsumerEndpoint
             for (KafkaRouterConfig.SendRouter sendRouter : kafkaRouterConfig.getSendRouters()) {
